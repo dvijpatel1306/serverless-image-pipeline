@@ -1,0 +1,11 @@
+# Pillow layer build files
+python/
+*.zip
+
+# Python
+__pycache__/
+*.pyc
+
+# OS files
+.DS_Store
+Thumbs.db

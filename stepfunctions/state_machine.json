@@ -1,0 +1,43 @@
+{
+  "Comment": "Resizes an image and checks if it worked",
+  "StartAt": "ResizeImage",
+  "States": {
+    "ResizeImage": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "image-resizer",
+        "Payload.$": "$"
+      },
+      "ResultSelector": {
+        "result.$": "$.Payload"
+      },
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Next": "ResizeFailed"
+        }
+      ],
+      "Next": "CheckResult"
+    },
+    "CheckResult": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.result.success",
+          "BooleanEquals": true,
+          "Next": "ResizeSucceeded"
+        }
+      ],
+      "Default": "ResizeFailed"
+    },
+    "ResizeSucceeded": {
+      "Type": "Succeed"
+    },
+    "ResizeFailed": {
+      "Type": "Fail",
+      "Error": "ResizeError",
+      "Cause": "Image resize failed"
+    }
+  }
+}
